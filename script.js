@@ -1,6 +1,5 @@
 // Author:
 
-// Global UI Variables
 let canvasDiv;
 let canvas;
 let textDiv;
@@ -9,7 +8,7 @@ let textP2;
 let buttonDiv;
 let resetButton;
 
-// Global Game Variables
+
 let snake;
 let food;
 let resolution;
@@ -17,9 +16,11 @@ let scaledWidth;
 let scaledHeight;
 let score;
 
-// Global ML Variables
+
 let soundClassifier;
 let isModelReady;
+
+
 
 function setup() {
   // Build the interface
@@ -44,8 +45,13 @@ function setup() {
   // Set the game's framerate to 5 (or whatever you prefer)
   frameRate(5);
   // Load the sound classifier
-
+  let options = {
+    probabilityThreshold: 0.95
+  };
+  soundClassifier = ml5.soundClassifier("https://teachablemachine.withgoogle.com/models/YyKkpqciL/", options,
+  modelReady);
 }
+
 
 function draw() {
   if(isModelReady) {
@@ -56,6 +62,7 @@ function draw() {
     drawGameObjects();
   }
 }
+
 
 function drawGameObjects() {
   // Check if snake is eating the food
@@ -81,11 +88,13 @@ function drawGameObjects() {
   }
 }
 
+
 function createFood() {
   let x = floor(random(scaledWidth));
   let y = floor(random(scaledHeight));
   food = createVector(x, y);
 }
+
 
 function checkCommand() {
   let commandLabel = textP2.html().toLowerCase();
@@ -100,6 +109,7 @@ function checkCommand() {
   }
 }
 
+
 function resetGame() {
   snake = new Snake();
   createFood();
@@ -109,9 +119,13 @@ function resetGame() {
   buttonDiv.style("display", "none");
 }
 
-function modelReady() {
 
+function modelReady() {
+  soundClassifier.classify(gotResults);
+  isModelReady = true;
+  resetGame();
 }
+
 
 function gotResults(error, results) {
   if(error) {
